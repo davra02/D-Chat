@@ -15,6 +15,7 @@ export class ChatComponent implements OnInit {
   constructor(private ethereumService: EthereumService) { }
 
   ngOnInit(): void {
+    this.ethereumService.init();
   }
 
   async sendMessage(): Promise<void> {
@@ -30,4 +31,6 @@ export class ChatComponent implements OnInit {
       console.error('Error sending message:', error);
     }
   }
+
+  
 }

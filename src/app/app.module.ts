@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FormsModule } from '@angular/forms';
 import { EthereumService } from './services/ethereum.service';
+import { RouterModule } from '@angular/router';
+import { routes } from './app.routes';
 
 
 
@@ -14,7 +16,8 @@ import { EthereumService } from './services/ethereum.service';
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    RouterModule.forRoot(routes)
     // Otros módulos que tu aplicación necesite
   ],
   providers: [EthereumService],

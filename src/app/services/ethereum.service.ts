@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ethers } from 'ethers';
 
 declare global {
-  interface Window {
-    ethereum: any;
-  }
+  interface Window { ethereum: any; }
 }
 
 @Injectable({
@@ -15,14 +14,18 @@ export class EthereumService {
   private signer!: ethers.Signer;
   private contract!: ethers.Contract;
 
-  constructor() {
-    this.init();
+  
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+   
   }
 
   async init() {
-    // Conectar al proveedor MetaMask
-    if (window.ethereum) {
-      try {
+    // Verificar si estamos en el navegador
+    
+    if (isPlatformBrowser(this.platformId) && window.ethereum) {
+      try {  
+        console.log("Hola en el navegador")
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         this.provider = new ethers.providers.Web3Provider(window.ethereum);
         this.signer = this.provider.getSigner();
@@ -30,11 +33,16 @@ export class EthereumService {
         console.error('User denied account access');
       }
     } else {
-      console.log('MetaMask is not installed');
+      alert("MetaMask is not installed")
     }
   }
 
-  
+  async testConnection(): Promise<string> {
+    const contractAddress = '0x5E12E0aB567cb85DC98c126094Fc30730b0b14Ec';
+    const abi = '';
+    await this.loadContract(abi, contractAddress);
+    return this.contract['testConnection']();
+  }
 
   async loadContract(abi: any, contractAddress: string) {
     this.contract = new ethers.Contract(contractAddress, abi, this.signer);
