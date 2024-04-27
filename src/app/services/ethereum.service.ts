@@ -1,6 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ethers } from 'ethers';
+import { abi } from '../../DChat/build/contracts/SimpleChat.json';
+import { contractAddress } from '../../DChat/contract-address.json';
 
 declare global {
   interface Window { ethereum: any; }
@@ -37,11 +39,26 @@ export class EthereumService {
     }
   }
 
+  async getUserAddress(): Promise<string> {
+    return this.signer.getAddress();
+  }
+
   async testConnection(): Promise<string> {
-    const contractAddress = '0x5E12E0aB567cb85DC98c126094Fc30730b0b14Ec';
-    const abi = '';
     await this.loadContract(abi, contractAddress);
     return this.contract['testConnection']();
+  }
+
+  async checkRegistered(): Promise<boolean> {
+    await this.loadContract(abi, contractAddress);
+    return this.contract['checkRegistered']();
+  }
+
+  async register(name: string) {
+    await this.loadContract(abi, contractAddress);
+    const address = await this.signer.getAddress();
+    const tx = await this.contract['register'](name, { from: address });
+    await tx.wait();
+    console.log('Usuario registrado:', name);
   }
 
   async loadContract(abi: any, contractAddress: string) {

@@ -1,5 +1,31 @@
-<div class="chat-container">
-    <input [(ngModel)]="message" type="text" placeholder="Write a message..." />
-    <button (click)="sendMessage()">Send</button>
-</div>
+<div class="container">
+    <div class="header">
+      <h1>Mi Aplicación</h1>
+      <button class="new-chat-button">Nuevo Chat</button>
+    </div>
+    <div class="chat-app">
+      <div class="sidenav">
+        <a href="#">Chat 1</a>
+        <a href="#">Chat 2</a>
+        <!-- Añade más chats aquí -->
+      </div>
+      <div class="chat-window">
+        <div class="chat-messages">
+          <div class="message">
+            <p>Usuario 1: Hola, ¿cómo estás?</p>
+          </div>
+          <div class="message">
+            <p>Usuario 2: ¡Hola! Estoy bien, ¿y tú?</p>
+          </div>
+          <!-- Añade más mensajes aquí -->
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="Escribe un mensaje...">
+          <button>Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<button (click)="testConnection()">Test</button>
   
+

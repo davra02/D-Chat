@@ -1,0 +1,18 @@
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="card text-white bg-primary mb-3" style="max-width: 20rem; border-radius: 25px;">
+    <div class="card-header">Registro</div>
+    <div class="card-body">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="accountAddress">Dirección de la cuenta</label>
+              <span id="accountAddress" class="form-control">{{accountAddress}}</span>
+            </div>
+            <div class="form-group">
+              <label for="name">Nombre</label>
+              <input type="text" class="form-control" id="name" formControlName="name" placeholder="Introduce tu nombre">
+            </div>
+            <button type="submit" class="btn btn-light">Registrar</button>
+        </form>
+    </div>
+  </div>
+</div>
