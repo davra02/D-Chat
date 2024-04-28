@@ -1,8 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { abi } from '../../DChat/build/contracts/SimpleChat.json';
 import { contractAddress } from '../../DChat/contract-address.json';
+import { Router } from '@angular/router';
 
 declare global {
   interface Window { ethereum: any; }
@@ -18,7 +19,7 @@ export class EthereumService {
 
   
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router) {
    
   }
 
@@ -36,16 +37,12 @@ export class EthereumService {
       }
     } else {
       alert("MetaMask is not installed")
+      this.router.navigate(['/']);
     }
   }
 
   async getUserAddress(): Promise<string> {
     return this.signer.getAddress();
-  }
-
-  async testConnection(): Promise<string> {
-    await this.loadContract(abi, contractAddress);
-    return this.contract['testConnection']();
   }
 
   async checkRegistered(): Promise<boolean> {
@@ -66,11 +63,77 @@ export class EthereumService {
   }
 
   // Luego, crea una función para enviar mensajes (o cualquier otra interacción):
-  async sendMessage(message: string) {
-    const tx = await this.contract['sendMessage'](message);
+  async sendMessage(chatId: BigNumber, message: string) {
+    const tx = await this.contract['sendMessage'](chatId, message);
     await tx.wait();
     console.log('Mensaje enviado:', message);
+}
+
+  //Para desarrollo
+  async testConnection(): Promise<string> {
+    await this.loadContract(abi, contractAddress);
+    return this.contract['testConnection']();
   }
 
-  // Implementa más funciones aquí, como enviar un mensaje a tu contrato
+  async getMyChats(): Promise<any> {
+    await this.loadContract(abi, contractAddress);
+    const address = await this.signer.getAddress();
+    return this.contract['getMyChats']({ from: address });
+  }
+
+  async getChatMessages(chatId: BigNumber): Promise<any> {
+    await this.loadContract(abi, contractAddress);
+    const address = await this.signer.getAddress();
+    return this.contract['getChatMessages'](chatId, { from: address });
+  }
+
+  async createChatByName(participantNames: string[]): Promise<any> {
+    await this.loadContract(abi, contractAddress);
+    const address = await this.signer.getAddress();
+    return this.contract['createChatByName'](participantNames, { from: address });
+  }
+
+  async getMyName(): Promise<string> {
+      await this.loadContract(abi, contractAddress);
+      const address = await this.signer.getAddress();
+      return this.contract['getMyName']({ from: address });
+  }
+
+  async listenToChatEvents(): Promise<void> {
+      const address = await this.signer.getAddress();
+
+      this.contract.on('ChatCreated', async (chatId, creator) => {
+          const isParticipant = await this.contract['isParticipant'](chatId, address);
+          if (isParticipant) {
+              console.log(`Chat created with ID: ${chatId}`);
+          }
+      });
+
+      this.contract.on('MessageSent', async (chatId, messageId, sender, senderName, content, timestamp) => {
+          const isParticipant = await this.contract['isParticipant'](chatId, address);
+          if (isParticipant) {
+              console.log(`Message sent in chat ${chatId} with ID: ${messageId}`);
+          }
+      });
+  }
+
+  // En EthereumService
+  async getAddress(): Promise<string> {
+    return await this.signer.getAddress();
+  }
+
+  listenToChatCreatedEvent(callback: (chatId: string, creator: string) => void): void {
+      this.contract.on('ChatCreated', callback);
+  }
+
+  listenToMessageSentEvent(callback: (chatId: string, messageId: string, sender: string, senderName: string, content: string, timestamp: string) => void): void {
+      this.contract.on('MessageSent', callback);
+  }
+
+  async isParticipant(chatId: string): Promise<boolean> {
+      const address = await this.signer.getAddress();
+      const isParticipant = await this.contract['isParticipant'](chatId, address);
+      return isParticipant;
+  }
+
 }

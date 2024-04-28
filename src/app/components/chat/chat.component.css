@@ -63,3 +63,13 @@
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
   }
+
+  .list-group-item {
+    background-color: rgb(197, 197, 197);
+    cursor: pointer;
+    border: none;
+}
+
+.list-group-item:hover {
+    background-color: #007bff;
+}

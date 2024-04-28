@@ -1,31 +1,84 @@
-<div class="container">
-    <div class="header">
-      <h1>Mi Aplicación</h1>
-      <button class="new-chat-button">Nuevo Chat</button>
+
+<div class="container py-5 px-4" style="height: 90vh; margin-top: 5vh;">
+    <div class="row rounded-lg overflow-hidden shadow" style="height: 100%;">
+    <!-- Users box-->
+    <div class="col-5 px-0 d-flex flex-column">
+      <div class="bg-white" style="flex-grow: 1;">
+
+        <div class="bg-gray px-4 py-2 bg-light">
+          <p class="h5 mb-0 py-1">Chats</p>
+        </div>
+
+        <div class="messages-box">
+            <div class="list-group rounded-0">
+                <a *ngFor="let chat of chats" class="list-group-item list-group-item-action active text-white rounded-0" (click)="selectChat(chat.id)">
+                    <div class="media">
+                      <span>{{ getChatName(chat) }}</span>
+                        <div class="media-body ml-4">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <h6 class="mb-0">{{ chat.name }}</h6><small class="small font-weight-bold">{{ chat.date }}</small>
+                            </div>
+                            <p class="font-italic mb-0 text-small">{{ chat.description }}</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- More items -->
+            </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="flex-shrink: 0;" (click)="createChat(createChatModal)">Crear chat</button>
     </div>
-    <div class="chat-app">
-      <div class="sidenav">
-        <a href="#">Chat 1</a>
-        <a href="#">Chat 2</a>
-        <!-- Añade más chats aquí -->
-      </div>
-      <div class="chat-window">
-        <div class="chat-messages">
-          <div class="message">
-            <p>Usuario 1: Hola, ¿cómo estás?</p>
-          </div>
-          <div class="message">
-            <p>Usuario 2: ¡Hola! Estoy bien, ¿y tú?</p>
-          </div>
-          <!-- Añade más mensajes aquí -->
+    <!-- Chat Box-->
+    <div class="col-7 px-0" style="display: flex; flex-direction: column; height: 100%;">
+      <div class="px-4 py-5 chat-box bg-white" style="flex-grow: 1; overflow: auto;">
+        <!-- Sender Message-->
+        <div *ngFor="let message of chatMessages" 
+            class="media mb-3 d-flex flex-column"
+            [ngClass]="{'ml-auto': message.senderName === currentUser}">
+            
+            <div class="media-body ml-3" 
+                [ngStyle]="{'align-self': message.senderName === currentUser ? 'flex-end' : 'flex-start'}">
+                <p style="font-size: 0.8em; color: gray; margin: 0;">{{message.senderName}}</p>
+                <div class="rounded py-2 px-3 mb-2" 
+                    [ngClass]="{'bg-light': message.senderName !== currentUser, 'bg-primary text-white': message.senderName === currentUser}">
+                    <p class="text-small mb-0" [ngClass]="{'text-muted': message.senderName !== currentUser, 'text-white': message.senderName === currentUser}">{{message.content}}</p>
+                </div>
+                <p class="small text-muted" style="margin-top: 0;">{{message.timestamp * 1000 | date:'short'}}</p>
+            </div>
         </div>
-        <div class="chat-input">
-          <input type="text" placeholder="Escribe un mensaje...">
-          <button>Enviar</button>
-        </div>
-      </div>
+    </div>
+
+      <!-- Typing area -->
+      <form class="bg-light" style="flex-shrink: 0;" (ngSubmit)="sendMessage()">
+          <div class="input-group">
+            <input type="text" name="message" placeholder="Type a message" aria-describedby="button-addon2" class="form-control rounded-0 border-0 py-4 bg-light" [(ngModel)]="message">
+              <div class="input-group-append">
+                  <button id="button-addon2" type="submit" class="btn btn" style="height: 100%;"> Enviar</button>
+              </div>
+          </div>
+      </form>
+
     </div>
   </div>
-<button (click)="testConnection()">Test</button>
-  
+</div>
 
+  
+<ng-template #createChatModal let-modal>
+  <div class="modal-header" style="display: flex; justify-content: space-between;">
+    <h4 class="modal-title" id="modal-basic-title">Crear chat</h4>
+    <button type="button" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngFor="let participantName of participantNames; let i = index">
+      <input [(ngModel)]="participantNames[i]" class="form-control" placeholder="Nombre del participante">
+    </div>
+    <button class="btn btn-primary mt-2" (click)="addParticipant()">+</button>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Crear</button>
+  </div>
+</ng-template>
+
+<button class="btn btn-primary" (click)="test()">Test</button>
