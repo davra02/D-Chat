@@ -26,7 +26,7 @@
         
                 <!-- Dropdown menu -->
                 <div class="dropdown ml-auto">
-                  <button class="btn btn-secondary" type="button" (click)="toggleDropdown(chat.id)">Menú</button>
+                  <button class="btn btn-secondary" type="button" (click)="toggleDropdown(chat.id)">...</button>
                   <div class="dropdown-menu" *ngIf="openedDropdown === chat.id">
                     <a class="dropdown-item" (click)="leaveChat(chat.id)">Salir del chat</a>
                     <a class="dropdown-item" *ngIf="chat.admin.userName === currentUser" (click)="deleteChat(chat.id)">Borrar chat</a>
@@ -94,11 +94,11 @@
   <div class="modal-body">
     <div *ngFor="let participantName of participantNames; let i = index; trackBy: trackByFn" style="display: flex; align-items: center;">
       <input [(ngModel)]="participantNames[i]" class="form-control" placeholder="Nombre del participante" style="flex-grow: 1;">
-      <button class="btn btn-danger ml-2" (click)="removeParticipant(i)">-</button>
+      <button class="btn btn-danger ml-2" (click)="removeParticipant(i)" [disabled]="participantNames.length === 1">-</button>
     </div>
     <button class="btn btn-primary mt-2" (click)="addParticipant()">+</button>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Crear</button>
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')" [disabled]="isAnyParticipantEmpty()">Crear</button>
   </div>
 </ng-template>

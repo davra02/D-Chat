@@ -48,7 +48,15 @@ export class ChatComponent implements OnInit {
   }
 
   addParticipant(): void {
-    this.participantNames.push('');
+    if (this.participantNames[this.participantNames.length - 1].trim() !== '') {
+      this.participantNames.push('');
+    }
+  }
+  
+  removeParticipant(index: number): void {
+    if (this.participantNames.length > 1) {
+      this.participantNames.splice(index, 1);
+    }
   }
 
   resetParticipants(): void {
@@ -107,6 +115,10 @@ export class ChatComponent implements OnInit {
         console.error('Error opening modal:', reason);
       }
     });
+  }
+
+  isAnyParticipantEmpty(): boolean {
+    return this.participantNames.some(name => name.trim() === '');
   }
 
   selectChat(chatId: BigNumber) {
@@ -175,10 +187,6 @@ export class ChatComponent implements OnInit {
 
   trackByFn(index: number): number {
     return index;
-  }
-  
-  removeParticipant(index: number): void {
-    this.participantNames.splice(index, 1);
   }
 
   async testConnection(): Promise<void> {
