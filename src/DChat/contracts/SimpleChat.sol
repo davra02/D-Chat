@@ -55,7 +55,13 @@ contract SimpleChat {
         userCount++;
     }
 
-    
+    function deleteChat(uint chatId) public {
+    // Comprobar si el remitente es el administrador del chat
+        require(chats[chatId].admin.addr == msg.sender, "Only the chat admin can delete the chat");
+
+        // Eliminar el chat
+        delete chats[chatId];
+    }
 
     function createChat(address[] memory participants) public {
         // Comprobar si el remitente es un usuario registrado
@@ -73,6 +79,8 @@ contract SimpleChat {
             newChat.participants.push(users[participants[i]]);
         }
     }
+
+
 
     function leaveChat(uint chatId) public {
         Chat storage chat = chats[chatId];
@@ -94,6 +102,11 @@ contract SimpleChat {
         // Eliminar al remitente de los participantes del chat
         chat.participants[participantIndex] = chat.participants[chat.participants.length - 1];
         chat.participants.pop();
+
+        // Si sólo queda un participante en el chat, eliminar el chat
+        if (chat.participants.length == 1) {
+            delete chats[chatId];
+        }
 
         // Eliminar el chat de los chats del remitente
         uint[] storage senderChats = userChats[msg.sender];
@@ -143,9 +156,20 @@ contract SimpleChat {
 
     function getMyChats() public view returns (Chat[] memory) {
         uint[] memory chatIds = userChats[msg.sender];
-        Chat[] memory myChats = new Chat[](chatIds.length);
+        uint count = 0;
         for (uint i = 0; i < chatIds.length; i++) {
-            myChats[i] = chats[chatIds[i]];
+            if (chats[chatIds[i]].admin.addr != address(0)) {
+                count++;
+            }
+        }
+
+        Chat[] memory myChats = new Chat[](count);
+        uint j = 0;
+        for (uint i = 0; i < chatIds.length; i++) {
+            if (chats[chatIds[i]].admin.addr != address(0)) {
+                myChats[j] = chats[chatIds[i]];
+                j++;
+            }
         }
         return myChats;
     }

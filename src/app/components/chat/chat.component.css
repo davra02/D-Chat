@@ -65,6 +65,7 @@
   }
 
   .list-group-item {
+    z-index: 1000;
     background-color: rgb(197, 197, 197);
     cursor: pointer;
     border: none;
@@ -72,4 +73,20 @@
 
 .list-group-item:hover {
     background-color: #007bff;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  display: block;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  z-index: 9999;
 }

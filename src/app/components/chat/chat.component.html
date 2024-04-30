@@ -4,26 +4,39 @@
     <!-- Users box-->
     <div class="col-5 px-0 d-flex flex-column">
       <div class="bg-white" style="flex-grow: 1;">
-
+    
         <div class="bg-gray px-4 py-2 bg-light">
           <p class="h5 mb-0 py-1">Chats</p>
         </div>
-
+    
         <div class="messages-box">
-            <div class="list-group rounded-0">
-                <a *ngFor="let chat of chats" class="list-group-item list-group-item-action active text-white rounded-0" (click)="selectChat(chat.id)">
-                    <div class="media">
-                      <span>{{ getChatName(chat) }}</span>
-                        <div class="media-body ml-4">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
-                                <h6 class="mb-0">{{ chat.name }}</h6><small class="small font-weight-bold">{{ chat.date }}</small>
-                            </div>
-                            <p class="font-italic mb-0 text-small">{{ chat.description }}</p>
-                        </div>
-                    </div>
-                </a>
-                <!-- More items -->
+          <div class="list-group rounded-0">
+            <div *ngFor="let chat of chats" class="list-group-item list-group-item-action active text-white rounded-0">
+              <div class="media d-flex align-items-center justify-content-between">
+                <div class="media-body ml-4">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <h6 class="mb-0">{{ chat.name }}</h6>
+                    <small class="small font-weight-bold">{{ chat.date }}</small>
+                  </div>
+                  <p class="font-italic mb-0 text-small">{{ chat.description }}</p>
+                </div>
+        
+                <span>{{ getChatName(chat) }}</span>
+        
+                <!-- Dropdown menu -->
+                <div class="dropdown ml-auto">
+                  <button class="btn btn-secondary" type="button" (click)="toggleDropdown(chat.id)">Menú</button>
+                  <div class="dropdown-menu" *ngIf="openedDropdown === chat.id">
+                    <a class="dropdown-item" (click)="leaveChat(chat.id)">Salir del chat</a>
+                    <a class="dropdown-item" *ngIf="chat.admin.userName === currentUser" (click)="deleteChat(chat.id)">Borrar chat</a>
+                  </div>
+                </div>
+                <!-- End of dropdown menu -->
+              </div>
+              <div (click)="selectChat(chat.id)"></div>
             </div>
+            <!-- More items -->
+          </div>
         </div>
       </div>
       <button class="btn btn-primary" style="flex-shrink: 0;" (click)="createChat(createChatModal)">Crear chat</button>
@@ -32,20 +45,27 @@
     <div class="col-7 px-0" style="display: flex; flex-direction: column; height: 100%;">
       <div class="px-4 py-5 chat-box bg-white" style="flex-grow: 1; overflow: auto;">
         <!-- Sender Message-->
-        <div *ngFor="let message of chatMessages" 
-            class="media mb-3 d-flex flex-column"
-            [ngClass]="{'ml-auto': message.senderName === currentUser}">
-            
-            <div class="media-body ml-3" 
-                [ngStyle]="{'align-self': message.senderName === currentUser ? 'flex-end' : 'flex-start'}">
-                <p style="font-size: 0.8em; color: gray; margin: 0;">{{message.senderName}}</p>
-                <div class="rounded py-2 px-3 mb-2" 
-                    [ngClass]="{'bg-light': message.senderName !== currentUser, 'bg-primary text-white': message.senderName === currentUser}">
-                    <p class="text-small mb-0" [ngClass]="{'text-muted': message.senderName !== currentUser, 'text-white': message.senderName === currentUser}">{{message.content}}</p>
-                </div>
-                <p class="small text-muted" style="margin-top: 0;">{{message.timestamp * 1000 | date:'short'}}</p>
-            </div>
+        <div *ngIf="+currentChat !== -1; else noChatSelected">
+          <div *ngFor="let message of chatMessages" 
+              class="media mb-3 d-flex flex-column"
+              [ngClass]="{'ml-auto': message.senderName === currentUser}">
+              
+              <div class="media-body ml-3" 
+                  [ngStyle]="{'align-self': message.senderName === currentUser ? 'flex-end' : 'flex-start'}">
+                  <p style="font-size: 0.8em; color: gray; margin: 0;">{{message.senderName}}</p>
+                  <div class="rounded py-2 px-3 mb-2" 
+                      [ngClass]="{'bg-light': message.senderName !== currentUser, 'bg-primary text-white': message.senderName === currentUser}">
+                      <p class="text-small mb-0" [ngClass]="{'text-muted': message.senderName !== currentUser, 'text-white': message.senderName === currentUser}">{{message.content}}</p>
+                  </div>
+                  <p class="small text-muted" style="margin-top: 0;">{{message.timestamp * 1000 | date:'short'}}</p>
+              </div>
+          </div>
         </div>
+        <ng-template #noChatSelected>
+          <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <p>Selecciona un chat para hablar</p>
+          </div>
+        </ng-template>
     </div>
 
       <!-- Typing area -->

@@ -99,6 +99,24 @@ export class EthereumService {
       return this.contract['getMyName']({ from: address });
   }
 
+  async leaveChat(chatId: BigNumber): Promise<any> {
+      await this.loadContract(abi, contractAddress);
+      const address = await this.signer.getAddress();
+      const tx = await this.contract['leaveChat'](chatId, { from: address });
+      await tx.wait();
+      console.log(`Left chat with ID: ${chatId}`);
+  }
+
+  async deleteChat(chatId: BigNumber): Promise<any> {
+      await this.loadContract(abi, contractAddress);
+      const address = await this.signer.getAddress();
+      const tx = await this.contract['deleteChat'](chatId, { from: address });
+      await tx.wait();
+      console.log(`Deleted chat with ID: ${chatId}`);
+  }
+
+  
+
   async listenToChatEvents(): Promise<void> {
       const address = await this.signer.getAddress();
 

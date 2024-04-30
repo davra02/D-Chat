@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { EthereumService } from '../../services/ethereum.service';
 import { FormsModule } from '@angular/forms'; // Importa FormsModule aquí
 import { Router, RouterModule } from '@angular/router';
@@ -24,7 +24,7 @@ export class ChatComponent implements OnInit {
   currentChat: BigNumber = BigNumber.from(-1);
   chatMessages: any[] = [];
   currentUser: string = '';
-
+  public openedDropdown: BigNumber | null = null;
 
 
   constructor(private ethereumService: EthereumService, private router: Router, private modalService: NgbModal) { }
@@ -149,8 +149,43 @@ export class ChatComponent implements OnInit {
     }
     return name;
   }
+
+  async deleteChat(chatId: BigNumber): Promise<void> {
+    try {
+      await this.ethereumService.deleteChat(chatId);
+      console.log(`Chat with ID: ${chatId} deleted`);
+      // Refresh the chat list after deletion
+      this.getMyChats();
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
+  }
   
+  async leaveChat(chatId: BigNumber): Promise<void> {
+    try {
+      await this.ethereumService.leaveChat(chatId);
+      console.log(`Left chat with ID: ${chatId}`);
+      await this.getMyChats();
+      // Refresh the chat list after leaving
+      this.getMyChats();
+    } catch (error) {
+      console.error('Error leaving chat:', error);
+    }
+  }
   
+  @ViewChild('dropdownMenu') dropdownMenu!: ElementRef;
+
+  openContextMenu(event: MouseEvent, chatId: BigNumber): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Toggle the 'show' class on the dropdown menu
+    if (this.dropdownMenu.nativeElement.classList.contains('show')) {
+      this.dropdownMenu.nativeElement.classList.remove('show');
+    } else {
+      this.dropdownMenu.nativeElement.classList.add('show');
+    }
+  }
 
   async testConnection(): Promise<void> {
     try {
@@ -158,6 +193,13 @@ export class ChatComponent implements OnInit {
       console.log('Connection test:', response);
     } catch (error) {
       console.error('Error testing connection:', error);
+    }
+  }
+  toggleDropdown(chatId: BigNumber): void {
+    if (this.openedDropdown === chatId) {
+      this.openedDropdown = null;
+    } else {
+      this.openedDropdown = chatId;
     }
   }
 
