@@ -172,19 +172,13 @@ export class ChatComponent implements OnInit {
       console.error('Error leaving chat:', error);
     }
   }
+
+  trackByFn(index: number): number {
+    return index;
+  }
   
-  @ViewChild('dropdownMenu') dropdownMenu!: ElementRef;
-
-  openContextMenu(event: MouseEvent, chatId: BigNumber): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Toggle the 'show' class on the dropdown menu
-    if (this.dropdownMenu.nativeElement.classList.contains('show')) {
-      this.dropdownMenu.nativeElement.classList.remove('show');
-    } else {
-      this.dropdownMenu.nativeElement.classList.add('show');
-    }
+  removeParticipant(index: number): void {
+    this.participantNames.splice(index, 1);
   }
 
   async testConnection(): Promise<void> {
@@ -222,10 +216,6 @@ export class ChatComponent implements OnInit {
               this.getChatMessages();
           }
       });
-  }
-
-  test() {
-    this.getMyName();
   }
   
 

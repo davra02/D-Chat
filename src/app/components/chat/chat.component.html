@@ -1,5 +1,6 @@
 
 <div class="container py-5 px-4" style="height: 90vh; margin-top: 5vh;">
+  <h1>Hola {{currentUser}}, estás utilizando D-Chat</h1>
     <div class="row rounded-lg overflow-hidden shadow" style="height: 100%;">
     <!-- Users box-->
     <div class="col-5 px-0 d-flex flex-column">
@@ -91,8 +92,9 @@
     </button>
   </div>
   <div class="modal-body">
-    <div *ngFor="let participantName of participantNames; let i = index">
-      <input [(ngModel)]="participantNames[i]" class="form-control" placeholder="Nombre del participante">
+    <div *ngFor="let participantName of participantNames; let i = index; trackBy: trackByFn" style="display: flex; align-items: center;">
+      <input [(ngModel)]="participantNames[i]" class="form-control" placeholder="Nombre del participante" style="flex-grow: 1;">
+      <button class="btn btn-danger ml-2" (click)="removeParticipant(i)">-</button>
     </div>
     <button class="btn btn-primary mt-2" (click)="addParticipant()">+</button>
   </div>
